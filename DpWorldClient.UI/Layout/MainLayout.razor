@@ -1,0 +1,40 @@
+﻿@inherits LayoutComponentBase
+
+<MudThemeProvider />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Style="background-color: #173a64;" Elevation="4">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" OnClick="@ToggleMainDrawer" />
+        <MudText Typo="Typo.h5">BCO Pagos y Facturación</MudText>
+        <MudSpacer />
+</MudAppBar>
+
+    <MainDrawer IsOpen="@_mainDrawerOpen" ToggleDrawer="ToggleMainDrawer" />
+
+    <CascadingValue Value="ToggleFilterDrawer">
+        <CascadingValue Value="_filterDrawerOpen">
+            <FilterDrawer IsOpen="@_filterDrawerOpen" />
+            <MudMainContent Class="main-content-responsive">
+                @Body
+            </MudMainContent>
+        </CascadingValue>
+    </CascadingValue>
+</MudLayout>
+
+@code {
+private bool _mainDrawerOpen;
+private bool _filterDrawerOpen;
+
+private void ToggleMainDrawer()
+{
+_mainDrawerOpen = !_mainDrawerOpen;
+}
+
+public void ToggleFilterDrawer()
+{
+_filterDrawerOpen = !_filterDrawerOpen;
+}
+}

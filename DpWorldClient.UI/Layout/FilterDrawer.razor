@@ -1,0 +1,126 @@
+@using DpWorldClient.UI.Models
+@using DpWorldClient.UI.Services
+@inject FilterStateService FilterStateService
+
+<MudDrawer @bind-Open="IsOpen" Anchor="Anchor.Right" Width="400px" Elevation="4" Variant="DrawerVariant.Temporary" DisableBackdropClick="false">
+    <MudDrawerHeader Style="background-color: #173a64; padding: 16px; margin-bottom: 20px">
+        <MudIconButton Icon="@Icons.Material.Filled.Close" Style="color: white; padding: 8px;" OnClick="ToggleDrawer" />
+        <MudSpacer />
+        <MudText Typo="Typo.h5" Style="color:white;">Filtrar/Ordenar</MudText>
+    </MudDrawerHeader>
+    <MudContainer>
+
+        <MudText Typo="Typo.subtitle1" Style="font-weight: bold; text-align: left; margin-bottom: 20px;">Por estado</MudText>
+        <MudButtonGroup Exclusive="false" Style="display: flex; justify-content: space-between; flex-wrap: nowrap; margin-bottom: 20px;">
+            <MudButton OnClick="@(() => ToggleState(FilterState.RELEASED))"
+                       Color="Color.Primary"
+                       Class="@GetButtonClass(FilterStateService.SelectedState == FilterState.RELEASED)"
+                       Style="flex: 1; margin-right: 5px;">
+                RELEASED
+            </MudButton>
+            <MudButton OnClick="@(() => ToggleState(FilterState.HOLD))"
+                       Color="Color.Primary"
+                       Class="@GetButtonClass(FilterStateService.SelectedState == FilterState.HOLD)"
+                       Style="flex: 1; margin-right: 5px;">
+                IMPEDIMIENTO
+            </MudButton>
+            <MudButton OnClick="@(() => ToggleState(FilterState.None))"
+                       Color="Color.Primary"
+                       Class="@GetButtonClass(FilterStateService.SelectedState == FilterState.None)"
+                       Style="flex: 1;">
+                ALL
+            </MudButton>
+        </MudButtonGroup>
+        <MudText Typo="Typo.subtitle1" Style="font-weight: bold; text-align: left; margin-bottom: 20px;">Por tamaño</MudText>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+            <MudCheckBox T="bool" @bind-Checked="FilterStateService.Size20" Label="20ft" />
+            <MudCheckBox T="bool" @bind-Checked="FilterStateService.Size40" Label="40ft" />
+            <MudCheckBox T="bool" @bind-Checked="FilterStateService.Size45" Label="45ft" />
+            <MudCheckBox T="bool" @bind-Checked="FilterStateService.Size48" Label="48ft" />
+        </div>
+
+        <MudText Typo="Typo.subtitle1" Style="font-weight: bold; text-align: left; margin-bottom: 20px;">Tipo</MudText>
+        <MudButtonGroup Exclusive="false" Style="display: flex; justify-content: space-between; flex-wrap: nowrap; margin-bottom: 20px;">
+            <MudButton OnClick="@(() => ToggleType(ContainerType.REFRIGERATED))"
+                       Color="Color.Primary"
+                       Class="@GetButtonClass(FilterStateService.SelectedType == ContainerType.REFRIGERATED)"
+                       Style="flex: 1; margin-right: 5px; font-size: larger;">
+                REFRIGERADO
+            </MudButton>
+            <MudButton OnClick="@(() => ToggleType(ContainerType.NON_REFRIGERATED))"
+                       Color="Color.Primary"
+                       Class="@GetButtonClass(FilterStateService.SelectedType == ContainerType.NON_REFRIGERATED)"
+                       Style="flex: 1; font-size: larger;">
+                NO REFRIGERADO
+            </MudButton>
+        </MudButtonGroup>
+
+        <MudText Typo="Typo.subtitle1" Style="font-weight: bold; text-align: left; margin-bottom: 20px;">Ordenar por precio</MudText>
+        <MudButtonGroup Exclusive="false" Style="display: flex; justify-content: space-between; flex-wrap: nowrap; margin-bottom: 20px;">
+            <MudButton OnClick="@(() => TogglePriceOrder(PriceOrder.HIGH_TO_LOW))"
+                       Color="Color.Primary"
+                       Class="@GetButtonClass(FilterStateService.SelectedPriceOrder == PriceOrder.HIGH_TO_LOW)"
+                       Style="flex: 1; margin-right: 5px;">
+                MAYOR A MENOR
+            </MudButton>
+            <MudButton OnClick="@(() => TogglePriceOrder(PriceOrder.LOW_TO_HIGH))"
+                       Color="Color.Primary"
+                       Class="@GetButtonClass(FilterStateService.SelectedPriceOrder == PriceOrder.LOW_TO_HIGH)"
+                       Style="flex: 1;">
+                MENOR A MAYOR
+            </MudButton>
+        </MudButtonGroup>
+
+        <div style="display: flex; justify-content: space-between; margin-top: 30px;">
+            <MudButton Variant="Variant.Outlined" Color="Color.Info" OnClick="ResetFilters" Style="flex: 1; margin-right: 10px; font-size: medium;">
+                Resetear
+            </MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="ApplyFilters" Style="flex: 1; font-size: medium;">
+                Aplicar
+            </MudButton>
+        </div>
+
+    </MudContainer>
+</MudDrawer>
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+
+    private void ToggleDrawer()
+    {
+        IsOpen = false;
+        IsOpenChanged.InvokeAsync(IsOpen);
+    }
+
+    private void ApplyFilters()
+    {
+        FilterStateService.ApplyFilters();
+        ToggleDrawer();
+    }
+
+    private void ResetFilters()
+    {
+        FilterStateService.ResetFilters();
+    }
+
+    private void ToggleState(FilterState state)
+    {
+        FilterStateService.SelectedState = (FilterStateService.SelectedState == state) ? FilterState.None : state;
+    }
+
+    private void ToggleType(ContainerType type)
+    {
+        FilterStateService.SelectedType = (FilterStateService.SelectedType == type) ? ContainerType.None : type;
+    }
+
+    private void TogglePriceOrder(PriceOrder order)
+    {
+        FilterStateService.SelectedPriceOrder = (FilterStateService.SelectedPriceOrder == order) ? PriceOrder.None : order;
+    }
+
+    private string GetButtonClass(bool isSelected)
+    {
+        return isSelected ? "selected-button" : "unselected-button";
+    }
+}

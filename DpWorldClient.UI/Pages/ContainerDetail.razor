@@ -1,0 +1,165 @@
+@page "/container-detail/{RecordId}"
+@using DpWorldClient.UI.Models
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+
+<div class="d-flex justify-center">
+    <MudCard Class="ma-4" Elevation="2" Style="max-width: 800px; width: 100%;">
+        <MudCardHeader>
+            <MudGrid>
+                <MudItem xs="6">
+                    <MudText Typo="Typo.h4">Container Details</MudText>
+                </MudItem>
+                <MudItem xs="6" Style="text-align: right;">
+                    <MudIconButton Icon="@Icons.Material.Filled.Close"
+                                   Color="Color.Info"
+                                   Variant="Variant.Filled"
+                                   Size="Size.Large"
+                                   Style="padding: 10px 40px"
+                                   OnClick="ClosePage" />
+                </MudItem>
+            </MudGrid>
+        </MudCardHeader>
+
+        @if (container != null)
+        {
+            <MudCardContent>
+                <MudGrid AlignItems="Center" Class="my-2">
+                    <MudItem xs="12" sm="8">
+                        <div class="d-flex align-center">
+                            <MudAvatar Size="Size.Large" Image="." Class="mr-3" />
+                            <div>
+                                <MudText Typo="Typo.h6">@container.ContainerNo</MudText>
+                                <MudText Typo="Typo.subtitle2">@container.IsoCode | @container.Category</MudText>
+                            </div>
+                        </div>
+                    </MudItem>
+                    <MudItem xs="12" sm="4" Class="d-flex justify-end">
+                        <MudText Typo="Typo.body2">@container.YardInTime?.ToString("dd-MMM-yyyy | HH:mm")</MudText>
+                    </MudItem>
+                </MudGrid>
+
+                <MudPaper Class="pa-4 my-4" Elevation="0" Outlined="true">
+                    <MudGrid>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.h6">Total Container Fee</MudText>
+                        </MudItem>
+                        <MudItem xs="6" Style="text-align: right;">
+                            <MudText Typo="Typo.h5" Color="Color.Primary">@container.Currency @container.TotalChargedAmount.ToString("N2")</MudText>
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+
+                <MudPaper Class="pa-4 my-4" Elevation="0" Outlined="true">
+                    <MudGrid>
+                        @foreach (var charge in container.UnitCharges)
+                        {
+                            <MudItem xs="12">
+                                <MudGrid>
+                                    <MudItem xs="8">
+                                        <MudText Typo="Typo.subtitle2">@charge.LineDescription</MudText>
+                                        <MudText Typo="Typo.body2">@charge.BillableQty day(s) | @container.Currency @charge.UnitPrice.ToString("N2")</MudText>
+                                    </MudItem>
+                                    <MudItem xs="4" Style="text-align: right;">
+                                        <MudText Typo="Typo.body2">@container.Currency @charge.TotalAmount.ToString("N2")</MudText>
+                                    </MudItem>
+                                </MudGrid>
+                            </MudItem>
+                        }
+                    </MudGrid>
+                </MudPaper>
+
+                <MudText Typo="Typo.h6" Class="mt-6 mb-4">Container Details</MudText>
+
+                <MudGrid>
+                    <MudItem xs="6" sm="3">
+                        <MudText Typo="Typo.body2">Line Carrier</MudText>
+                        <MudText Typo="Typo.body1">@container.LineOperator</MudText>
+                    </MudItem>
+                    <MudItem xs="6" sm="3">
+                        <MudText Typo="Typo.body2">ISO</MudText>
+                        <MudText Typo="Typo.body1">@container.IsoCode</MudText>
+                    </MudItem>
+                    <MudItem xs="6" sm="3">
+                        <MudText Typo="Typo.body2">Location</MudText>
+                        <MudText Typo="Typo.body1">@container.YardPosition</MudText>
+                    </MudItem>
+                    <MudItem xs="6" sm="3">
+                        <MudText Typo="Typo.body2">State</MudText>
+                        <MudText Typo="Typo.body1">@container.Status</MudText>
+                    </MudItem>
+                    <MudItem xs="6" sm="3">
+                        <MudText Typo="Typo.body2">Category</MudText>
+                        <MudText Typo="Typo.body1">@container.Category</MudText>
+                    </MudItem>
+                    <MudItem xs="6" sm="3">
+                        <MudText Typo="Typo.body2">Line Status</MudText>
+                        <MudText Typo="Typo.body1">@container.LineHold</MudText>
+                    </MudItem>
+                    <MudItem xs="6" sm="3">
+                        <MudText Typo="Typo.body2">VGM</MudText>
+                        <MudText Typo="Typo.body1">@container.VgmWeight</MudText>
+                    </MudItem>
+                    <MudItem xs="6" sm="3">
+                        <MudText Typo="Typo.body2">Weight</MudText>
+                        <MudText Typo="Typo.body1">@container.Weight</MudText>
+                    </MudItem>
+                    <MudItem xs="6" sm="3">
+                        <MudText Typo="Typo.body2">DGA Hold</MudText>
+                        <MudText Typo="Typo.body1">@container.DgaHold</MudText>
+                    </MudItem>
+                    <MudItem xs="6" sm="3">
+                        <MudText Typo="Typo.body2">Temperature</MudText>
+                        <MudText Typo="Typo.body1">@container.TemperatureReq</MudText>
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+        }
+        else
+        {
+            <MudCardContent>
+                <MudText>Loading...</MudText>
+            </MudCardContent>
+        }
+    </MudCard>
+</div>
+@code {
+    [Parameter] public string RecordId { get; set; }
+
+    private ContainerModel container;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var response = await Http.GetFromJsonAsync<WebResponse<ContainerModel>>($"http://localhost:5000/api/container/{RecordId}");
+            if (response.IsSuccess)
+            {
+                container = response.Body;
+            }
+            else
+            {
+                throw new ApplicationException($"Error al obtener el contenedor: {response.Message}");
+            }
+        }
+        catch (HttpRequestException e)
+        {
+            Console.WriteLine($"Error de red: {e.Message}");
+        }
+        catch (ApplicationException e)
+        {
+            Console.WriteLine(e.Message);
+        }
+        catch (Exception e)
+        {
+            // Capturar cualquier otra excepción no manejada
+            Console.WriteLine($"Error inesperado: {e.Message}"); }
+
+        
+    }
+    private void ClosePage()
+    {
+        NavigationManager.NavigateTo("/containers");
+    }
+
+}

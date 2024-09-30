@@ -1,0 +1,123 @@
+<MudDrawer @bind-Open="IsOpen" Anchor="Anchor.Left" Width="400px" Elevation="4" Variant="DrawerVariant.Temporary" DisableBackdropClick="false" OnClose="OnDrawerClose">
+    <MudDrawerHeader Style="background-color: #173a64; padding: 16px; color: white;">
+        <MudGrid>
+            <MudItem xs="6">
+                <MudIcon Icon="@Icons.Material.Filled.AccountCircle" Size="Size.Large" />
+            </MudItem>
+            <MudItem xs="6" Style="text-align: right;">
+                <MudIconButton Icon="@Icons.Material.Filled.Close" Style="color: white;" OnClick="ToggleDrawer" />
+            </MudItem>
+            
+            <MudItem xs="12" Style="text-align: left;">
+                <MudText Typo="Typo.h6" Style="font-weight: bold; color: white; margin-top: 8px;">
+                    Zona Franca Multimodal <br/> Caucedo S A
+                </MudText>
+            </MudItem>
+        </MudGrid>
+    </MudDrawerHeader>
+
+    <MudContainer Style="padding-left: 8px; padding-right: 8px; padding-top: 16px;"> 
+
+        <MudGrid Style="margin-bottom: 16px;"> 
+            <MudItem xs="8">
+                <MudText Typo="Typo.subtitle1">Preferred Language:</MudText>
+            </MudItem>
+            <MudItem xs="4" Style="text-align: right;">
+                <MudSelect @bind-Value="SelectedLanguage" Variant="Variant.Outlined" Class="small-select" Style="width: 110px;">
+                    @foreach (var language in _availableLanguages)
+                    {
+                    <MudSelectItem Value="language">@language</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+        </MudGrid>
+
+        <MudGrid Style="margin-bottom: 16px;">
+            <MudItem xs="8">
+                <MudText Typo="Typo.subtitle1">Moneda:</MudText>
+            </MudItem>
+            <MudItem xs="4" Style="text-align: right;">
+                <MudSelect @bind-Value="SelectedCurrency" Variant="Variant.Outlined" Class="small-select" Style="width: 50px;">
+                    @foreach (var currency in _availableCurrencies)
+                    {
+                    <MudSelectItem Value="currency">@currency</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+        </MudGrid>
+
+        <MudGrid Style="margin-bottom: 16px;">
+            <MudItem xs="8">
+                <MudText Typo="Typo.subtitle1">Cuenta Tipo:</MudText>
+            </MudItem>
+            <MudItem xs="4" Style="text-align: right;">
+                <MudText Typo="Typo.subtitle1"><b style="color: #0D47A1;">CRÉDITO</b></MudText>
+            </MudItem>
+        </MudGrid>
+
+        <MudGrid Style="margin-bottom: 16px;">
+            <MudItem xs="8">
+                <MudText Typo="Typo.subtitle1">Credit Limit:</MudText>
+            </MudItem>
+            <MudItem xs="4" Style="text-align: right;">
+                <MudText Typo="Typo.subtitle1"><b>@string.Format("{0:N2}", 0.00)</b></MudText> <!-- Formato con comas para los miles -->
+            </MudItem>
+        </MudGrid>
+
+        <MudGrid Style="margin-bottom: 16px;">
+            <MudItem xs="8">
+                <MudText Typo="Typo.subtitle1">Outstanding Payments:</MudText>
+            </MudItem>
+            <MudItem xs="4" Style="text-align: right;">
+                <MudText Typo="Typo.subtitle1"><b style="color: orange;">@string.Format("{0:N2}", 373033.85)</b></MudText> <!-- Formato con comas -->
+            </MudItem>
+        </MudGrid>
+
+        <MudGrid Style="margin-bottom: 16px;">
+            <MudItem xs="8">
+                <MudText Typo="Typo.subtitle1">Credit Limit US:</MudText>
+            </MudItem>
+            <MudItem xs="4" Style="text-align: right;">
+                <MudText Typo="Typo.subtitle1"><b>@string.Format("{0:N2}", 200000.00)</b></MudText> <!-- Formato con comas -->
+            </MudItem>
+        </MudGrid>
+
+        <MudGrid Style="margin-bottom: 16px;">
+            <MudItem xs="8">
+                <MudText Typo="Typo.subtitle1">Outstanding Payments US:</MudText>
+            </MudItem>
+            <MudItem xs="4" Style="text-align: right;">
+                <MudText Typo="Typo.subtitle1"><b style="color: orange;">@string.Format("{0:N2}", 18317.87)</b></MudText> <!-- Formato con comas -->
+            </MudItem>
+        </MudGrid>
+
+        <MudContainer Style="position: absolute; bottom: 0; left: 0; width: 100%; display: flex; justify-content: center;">
+            <MudButton Variant="Variant.Filled" Color="Color.Info" FullWidth="true" Style="margin: 16px; max-width: 200px;">SALIR</MudButton> <!-- Centrado -->
+        </MudContainer>
+
+    </MudContainer>
+</MudDrawer>
+
+@code {
+[Parameter] public bool IsOpen { get; set; }
+[Parameter] public EventCallback ToggleDrawer { get; set; }
+
+private string SelectedLanguage { get; set; } = "Spanish";
+private string SelectedCurrency { get; set; } = "DOP";
+
+private List<string> _availableLanguages = new List<string>
+{
+"Spanish", "English"
+};
+
+private List<string> _availableCurrencies = new List<string>
+{
+"DOP", "USD"
+};
+
+private void OnDrawerClose()
+{
+IsOpen = false;
+ToggleDrawer.InvokeAsync(null);
+}
+}

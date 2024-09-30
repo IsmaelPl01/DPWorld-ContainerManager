@@ -1,0 +1,118 @@
+@page "/containers"
+@using DpWorldClient.UI.Components
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+
+<div class="container mt-12" style="display: flex; flex-direction: column; min-height: 100vh;">
+    <!-- Sección de filtros -->
+    <div class="filter-section" style="display: flex; justify-content: center; align-items: center; gap: 1rem;">
+        <div style="flex: 1;">
+            <MudSelect @bind-Value="SelectedCategory"
+                       Variant="Variant.Outlined"
+                       FullWidth="true"
+                       Class="input-height">
+                @foreach (var category in AvailableCategories)
+                {
+                <MudSelectItem Value="@category">@category</MudSelectItem>
+                }
+            </MudSelect>
+        </div>
+
+        <div style="flex: 4; display: flex; justify-content: space-between;">
+            <MudTextField @bind-Value="SearchTerm"
+                          Placeholder="Buscar por número de contenedor"
+                          Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Search"
+                          Variant="Variant.Outlined"
+                          FullWidth="true"
+                          Class="input-height"
+                          Immediate="true"
+                          DebounceInterval="300"
+                          OnDebounceIntervalElapsed="OnSearchTermChanged" />
+
+            <MudButton Variant="Variant.Filled"
+                       StartIcon="@Icons.Material.Filled.FilterList"
+                       Style="width: 150px;"
+                       OnClick="ToggleFilterDrawer">
+                Filtrar
+            </MudButton>
+        </div>
+    </div>
+
+    <!-- Sección de selección de contenedores -->
+    <div class="select-section mt-4" style="display: flex; justify-content: space-between; align-items: center;">
+        <MudText Typo="Typo.subtitle1">@TotalContainers Contenedores</MudText>
+
+        <MudText Typo="Typo.subtitle1">
+            <MudLink OnClick="ToggleSelectAllContainers" Style="cursor: pointer; text-decoration: underline;">
+                @(AreAllContainersSelected ? "Clear All" : "Select All")
+            </MudLink>
+        </MudText>
+    </div>
+
+    <!-- Grid de contenedores -->
+    <MudGrid Class="mt-1">
+        @if (PaginatedContainers != null && PaginatedContainers.Any())
+        {
+        @foreach (var container in PaginatedContainers)
+        {
+        <MudItem xs="12" sm="6" md="4" lg="4" @key="container.RecordId">
+            <ContainerCard Container="container"
+                                    OnContainerCheckboxChanged="@(isChecked => OnContainerCheckboxChanged(container.RecordId, isChecked))"
+                                    IsContainerSelected="IsContainerSelected"
+                                    NavigateToDetails="NavigateToDetails" />
+        </MudItem>
+        }
+        }
+        else
+        {
+        <MudItem xs="12">
+            <div class="no-results" style="text-align: center; width: 100%;">
+                <MudText Align="Align.Center">No se encontraron contenedores.</MudText>
+            </div>
+        </MudItem>
+        }
+    </MudGrid>
+
+
+    <!-- Sección de paginación -->
+    <div class="pagination-container" style="margin-bottom: 1rem;">
+        <div class="pagination-options mt-4" style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center;">
+                <MudText Typo="Typo.body1" Class="mr-2">Items por página:</MudText>
+                <MudSelect @bind-Value="PageSize" Dense="true" Style="width: 70px;">
+                    @foreach (var size in PageSizeOptions)
+                    {
+                    <MudSelectItem Value="@size">@size</MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+
+            @if (TotalPages > 1)
+            {
+            <div class="pagination-controls" style="display: flex; align-items: center;">
+                <MudButton Disabled="@(PageNumber == 1)" OnClick="PreviousPage">Anterior</MudButton>
+                <MudText Class="mx-2">Página @PageNumber de @TotalPages</MudText>
+                <MudButton Disabled="@(PageNumber == TotalPages)" OnClick="NextPage">Siguiente</MudButton>
+            </div>
+            }
+        </div>
+    </div>
+
+    <!-- Sección de barra inferior -->
+    <div class="footer-space" style="height: 70px; margin-top: 1rem; ">
+        @if (SelectedContainers.Any())
+        {
+        <div class="summary-bar" style="position: fixed; bottom: 0; left: 0; right: 0; background-color: #173a64; border-top: 1px solid #ccc; padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
+            <MudText Typo="Typo.subtitle1" Style="color: #fff">
+                Contenedores seleccionados: @SelectedContainers.Count<br />
+                Total: @TotalSelectedAmount.ToString("C")
+            </MudText>
+
+            <MudButton Variant="Variant.Filled" Size="Size.Large" Color="Color.Info" OnClick="Proceed">
+                Proceder
+            </MudButton>
+        </div>
+        }
+    </div>
+</div>

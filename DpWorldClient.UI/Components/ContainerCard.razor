@@ -1,0 +1,57 @@
+@using DpWorldClient.UI.Models
+
+<MudCard Class="ma-2" Elevation="4" Style="position: relative; min-height: 170px; display: flex; flex-direction: column; padding: 0.5rem;">
+    <MudCheckBox T="bool"
+                 Value="@IsContainerSelected(Container.RecordId)"
+                 ValueChanged="@(isChecked => OnContainerCheckboxChanged.InvokeAsync(isChecked))"
+                 Dense="true"
+                 Color="Color.Success"
+                 Style="position: absolute; top: 10px; right: 10px;" />
+
+    <MudCardContent Style="flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+            <MudText Typo="Typo.h6" Style="color: #505e76;">@Container.ContainerNo</MudText>
+            <MudText Typo="Typo.subtitle2">@Container.BillofLading</MudText>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; white-space: nowrap;">
+                <MudText Typo="Typo.body2">@Container.IsoCode</MudText>
+                <MudText Typo="Typo.body2" Color="Color.Error" Style="white-space: nowrap;">
+                    @Container.StorageDays DIA(S) CARGO @String.Format("{0:N2}", @Container.StorageFees) @Container.Currency
+                </MudText>
+            </div>
+        </div>
+
+        <MudGrid Style="flex-grow: 1; display: flex; justify-content: space-between; align-items: center; white-space: nowrap;">
+            <MudItem xs="6" Style="display: flex; align-items: center;">
+                <MudText Typo="Typo.body2" Style="color: gray; white-space: nowrap;">
+                    Línea: <span style="color: black;">@Container.LineOperator</span>
+                </MudText>
+            </MudItem>
+
+            <MudItem xs="6" Style="display: flex; justify-content: flex-end; align-items: center; gap: 0.5rem;">
+                <MudText Typo="Typo.h6" Style="color: #505e76;">
+                    @String.Format("{0:N2}", @Container.TotalChargedAmount) @Container.Currency
+                </MudText>
+                <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowRight"
+                               Size="Size.Large"
+                               Style="margin-right: 0; padding: 0; width: 40px; height: 40px;"
+                               Color="Color.Default"
+                               OnClick="@(async () => await NavigateToDetails.InvokeAsync(Container.RecordId))"/>
+            </MudItem>
+        </MudGrid>
+    </MudCardContent>
+</MudCard>
+
+@code {
+[Parameter]
+public ContainerModel Container { get; set; }
+
+[Parameter]
+public EventCallback<bool> OnContainerCheckboxChanged { get; set; }
+
+[Parameter]
+public Func<string, bool> IsContainerSelected { get; set; }
+
+[Parameter]
+public EventCallback<string> NavigateToDetails { get; set; }
+}
