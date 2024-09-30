@@ -12,8 +12,8 @@ Aplicación de gestión y filtrado de contenedores para DP World, diseñada para
 
 ## Tecnologías
 - **Frontend**: [MudBlazor](https://mudblazor.com/) para la interfaz de usuario.
-- **Backend**: Servicios RESTful integrados con la API de DP World.
-- **Lenguajes**: C#, Razor (Blazor).
+- **Backend**: API básica en python.
+- **Lenguajes**: C# y Blazor.
 
 ## Instalación
 
