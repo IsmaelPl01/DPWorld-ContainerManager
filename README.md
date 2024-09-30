@@ -84,6 +84,3 @@ Aplicación de gestión y filtrado de contenedores para DP World, diseñada para
 - **Obtener un contenedor específico por recordId**: 
   ```bash
     GET /api/container/<recordId>
-
-  
-
